@@ -5,7 +5,7 @@ import sys, os
 from bottle import route, static_file, run, post, request, redirect, route
 import urllib.parse
 
-import zkcreds
+# import zkcreds
 import base64
 
 # Move current directory to file
