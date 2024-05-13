@@ -2,31 +2,24 @@ use crate::microbenches::monolithic_proof::{
     gen_monolithic_crs, prove_monolithic, verify_monolithic,
 };
 
-use core::borrow::Borrow;
-
 use zkcreds::{
     attrs::{
-        AccountableAttrs as AccountableAttrsTrait, AccountableAttrsVar as AccountableAttrsVarTrait,
         Attrs, AttrsVar,
     },
     com_forest::{gen_forest_memb_crs, ComForestRoots},
     com_tree::{gen_tree_memb_crs, ComTree},
     link::{link_proofs, verif_link_proof, LinkProofCtx, LinkVerifyingKey, PredPublicInputs},
-    poseidon_utils::{setup_poseidon_params, Bls12PoseidonCommitter, Bls12PoseidonCrh, ComNonce},
+    poseidon_utils::{Bls12PoseidonCommitter, Bls12PoseidonCrh, ComNonce},
     pred::PredicateChecker,
     pred::{gen_pred_crs, prove_pred},
-    revealing_multishow::{MultishowableAttrs, RevealingMultishowChecker},
-    zk_utils::UnitVar,
-    ComNonceVar, ComParam, ComParamVar,
+    zk_utils::UnitVar,ComParam, ComParamVar,
 };
 
 use ark_bls12_381::Bls12_381;
-use ark_crypto_primitives::{commitment::CommitmentScheme, crh::TwoToOneCRH};
 use ark_ec::PairingEngine;
-use ark_ed_on_bls12_381::{constraints::FqVar, EdwardsParameters};
 use ark_ff::{to_bytes, UniformRand};
 use ark_r1cs_std::{
-    alloc::{AllocVar, AllocationMode},
+    alloc::AllocVar,
     bits::ToBytesGadget,
     fields::fp::FpVar,
     uint8::UInt8,
@@ -36,13 +29,8 @@ use ark_relations::{
     ns,
     r1cs::{ConstraintSystemRef, Namespace, SynthesisError},
 };
-use ark_std::{
-    io::Write,
-    rand::{rngs::StdRng, Rng, SeedableRng},
-};
-use arkworks_utils::Curve;
+use ark_std::rand::Rng;
 use criterion::Criterion;
-use lazy_static::lazy_static;
 use linkg16::groth16;
 
 const LOG2_NUM_LEAVES: u32 = 31;
@@ -67,7 +55,7 @@ struct ExpiryAttrs {
 #[derive(Clone)]
 struct ExpiryAttrsVar {
     nonce: ComNonce,
-    expiry: FpVar<Fr>,
+    expiry: FpVar<Fr>, // r1cs format of expiry
 }
 
 impl ExpiryAttrs {
